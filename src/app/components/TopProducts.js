@@ -1,0 +1,46 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import Swipper from "./Swipper";
+import Link from "next/link";
+import { showToast } from "../utils/swal";
+import { apiRequest } from "../utils/commonApi";
+
+const TopSellerProducts = () => {
+  const [data, setData] = useState([]);
+
+  const getAllData = async () => {
+    try {
+      const res = await apiRequest("/api/product/allTopProduct", "get");
+      console.log(res.data);
+      setData(res.data);
+    } catch (e) {
+      console.log(e);
+      showToast({
+        icon: "error",
+        title: "fetching error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getAllData();
+  }, []);
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Top Selling Products
+        </h2>
+        <Link
+          href="/shop"
+          className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
+        >
+          See All
+        </Link>
+      </div>
+      <Swipper data={data} variant="product" />
+    </section>
+  );
+};
+
+export default TopSellerProducts;
