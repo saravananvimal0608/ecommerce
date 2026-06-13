@@ -4,10 +4,14 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "../utils/commonApi";
 import { showToast } from "../utils/swal";
+import Link from "next/link";
+import SkeletonLoader from "../utils/skeleton";
 
 const FeaturedCategories = () => {
   const [categories, setCategories] = useState([]);
   const [toggle, setToggle] = useState(false);
+
+  const [loading, setLoading] = useState(true);
 
   const getAllCategory = async () => {
     try {
@@ -18,6 +22,8 @@ const FeaturedCategories = () => {
         icon: "error",
         title: e.response?.data?.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,27 +46,35 @@ const FeaturedCategories = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {displayCategories.map((category) => (
-          <div
-            key={category._id}
-            className="flex flex-col items-center bg-white rounded-2xl p-6 shadow-xl
-            hover:shadow-2xl hover:-translate-y-2
-            transition-all duration-300 cursor-pointer"
-          >
-            <div className="relative w-[100px] h-[100px]">
-              <Image
-                src={category.image}
-                alt={category.name}
-                fill
-                className="object-cover rounded-full"
-              />
-            </div>
+      {loading ? (
+        <SkeletonLoader variant="category" loading={loading}/>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {displayCategories.map((category) => (
+            <div
+              key={category._id}
+              className="flex flex-col items-center bg-white rounded-2xl p-6 shadow-xl
+        hover:shadow-2xl hover:-translate-y-2
+        transition-all duration-300 cursor-pointer"
+            >
+              <Link href={`/product?category=${category._id}`}>
+                <div className="relative w-[100px] h-[100px]">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover rounded-full"
+                  />
+                </div>
 
-            <h2 className="mt-4 text-lg font-semibold">{category.name}</h2>
-          </div>
-        ))}
-      </div>
+                <h2 className="mt-4 text-lg font-semibold text-center line-clamp-2">
+                  {category.name}
+                </h2>
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

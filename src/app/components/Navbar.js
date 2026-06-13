@@ -6,14 +6,53 @@ import { FaSearch } from "react-icons/fa";
 import { Typewriter } from "react-simple-typewriter";
 import { apiRequest } from "../utils/commonApi";
 import Image from "next/image";
+import { useSearch } from "../context/SearchContext";
+import { useRouter } from "next/navigation";
+import { fetchCart } from "../redux/slice/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { FiUser, FiLogOut, FiLogIn, FiMapPin, FiPackage } from "react-icons/fi";
+import { showToast } from "../utils/swal";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const cartItems = useSelector((state) => state.cart.items);
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
+  const [toggle, setToggle] = useState(false);
+  // search and setsearch comming from usecontext from context folder
+  const { search, setSearch } = useSearch();
+  const router = useRouter();
   const searchRef = React.useRef(null);
+  const email = localStorage.getItem("email");
+  const emailFirstLetter = email?.charAt(0).toUpperCase() || "";
+  const token = localStorage.getItem("token");
+  const toggleRef = React.useRef(null);
+
+  const showSearch =
+    pathname === "/" ||
+    pathname === "/product" ||
+    pathname.startsWith("/product/");
+
+  const showSearchForNoToken = pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname==="/verify-otp" || pathname === '/reset-password';
+
+  const handleSearch = (value) => {
+    setSearch(value);
+    setShowDropdown(false);
+    setIsFocused(false);
+    router.push("/product");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    showToast({ icon: "success", title: "successfully logout" });
+    router.push("/login");
+  };
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -39,9 +78,15 @@ const Navbar = () => {
     };
 
     const handleClickOutside = (e) => {
+      // Search dropdown close
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowDropdown(false);
         setIsFocused(false);
+      }
+
+      // Profile dropdown close
+      if (toggleRef.current && !toggleRef.current.contains(e.target)) {
+        setToggle(false);
       }
     };
     window.addEventListener("scroll", handleScroll);
@@ -52,103 +97,171 @@ const Navbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
+
   return (
-    <div
-      className={`fixed top-0 left-0 w-full z-50 px-6 bg-indigo-950/60 backdrop-blur-md transition-shadow duration-300 ${
-        scrolled ? "shadow-lg" : ""
-      }`}
-    >
-      <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between rounded-2xl  px-8 py-2">
-          <div className="text-2xl font-bold text-white">Simply</div>
+    !showSearchForNoToken && (
+      <div
+        className={`w-full z-50 px-6  backdrop-blur-md transition-all duration-300 shadow-lg ${
+          scrolled ? "fixed top-0 left-0 " : "relative"
+        }`}
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between rounded-2xl  px-8 py-2">
+            <div className="text-2xl font-bold text-indigo-950/60">Simply</div>
 
-          <div className="relative w-full max-w-md" ref={searchRef}>
-            <>
-              <input
-                type="text"
-                value={search}
-                className="w-full pl-6 pr-12 py-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-white outline-none"
-                onFocus={() => {
-                  setIsFocused(true);
-                  if (search) setShowDropdown(true);
-                }}
-                onClick={() => {
-                  if (search) setShowDropdown(true);
-                }}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  setSearch(value);
-                  setShowDropdown(!!value);
-
-                  if (!value) {
-                    setIsFocused(false);
-                  }
-                }}
-              />
-              {!isFocused && !search && (
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-gray-300 pointer-events-none">
-                  <span>Search&nbsp;</span>
-                  <Typewriter
-                    words={["denim", "Shirts", "Shoes", "T-Shirts"]}
-                    loop={0}
-                    cursor={false}
-                    typeSpeed={100}
-                    deleteSpeed={50}
-                    delaySpeed={1500}
-                  />
-                </div>
-              )}
-              <FaSearch className="absolute right-5 top-1/2 -translate-y-1/2 text-white" />
-            </>
-            {showDropdown && search && (
-              <div className="absolute z-[9999] top-14 left-0 w-full bg-white rounded-xl shadow-lg max-h-72 overflow-y-auto">
-                {data?.map((item) => (
-                  <div
-                    key={item._id}
-                    onMouseDown={() => {
-                      setSearch(item.name);
-                      setShowDropdown(false);
-                      setIsFocused(false);
+            {showSearch && (
+              <div className="relative w-full max-w-md " ref={searchRef}>
+                <>
+                  <input
+                    type="text"
+                    value={search}
+                    className="w-full pl-6 pr-12 py-3 rounded-full border border-white/20 bg-indigo-950/60 backdrop-blur-sm text-white outline-none"
+                    onFocus={() => {
+                      setIsFocused(true);
+                      if (search) setShowDropdown(true);
                     }}
-                    className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {item.images?.[0] && (
-                      <Image
-                        src={item.images[0]}
-                        alt={item.name}
-                        width={40}
-                        height={40}
-                        className="rounded-md object-cover border"
+                    onClick={() => {
+                      if (search) setShowDropdown(true);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && search) handleSearch(search);
+                    }}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearch(value);
+                      setShowDropdown(!!value);
+                      if (!value) setIsFocused(false);
+                    }}
+                  />
+                  {!isFocused && !search && (
+                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-gray-300 pointer-events-none">
+                      <span>Search&nbsp;</span>
+                      <Typewriter
+                        words={["denim", "Shirts", "Shoes", "T-Shirts"]}
+                        loop={0}
+                        cursor={false}
+                        typeSpeed={100}
+                        deleteSpeed={50}
+                        delaySpeed={1500}
                       />
-                    )}
-                    <span className="text-sm text-gray-800 truncate">
-                      {item.name}
-                    </span>
+                    </div>
+                  )}
+                  <FaSearch
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white cursor-pointer"
+                    onClick={() => {
+                      if (search) handleSearch(search);
+                    }}
+                  />
+                </>
+                {showDropdown && search && (
+                  <div className="absolute z-[9999] top-14 left-0 w-full bg-white rounded-xl shadow-lg max-h-72 overflow-y-auto">
+                    {data?.map((item) => (
+                      <div
+                        key={item._id}
+                        onMouseDown={() => handleSearch(item.name)}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        {item.images?.[0] && (
+                          <Image
+                            src={item.images[0]}
+                            alt={item.name}
+                            width={40}
+                            height={40}
+                            className="rounded-md object-cover border"
+                          />
+                        )}
+                        <span className="text-sm text-gray-800 truncate">
+                          {item.name}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             )}
-          </div>
+            <div className="flex items-center gap-6">
+              <Link href={"../cart"}>
+                {" "}
+                <div className="relative">
+                  <FaShoppingCart
+                    size={22}
+                    color="#312e81"
+                    className="cursor-pointer text-white/80 hover:text-white transition"
+                  />
+                  {cartItems?.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                      {cartItems.length}
+                    </span>
+                  )}
+                </div>
+              </Link>
+              <FaRegMessage
+                size={20}
+                color="#312e81"
+                className="cursor-pointer text-white/80 hover:text-white transition"
+              />
+              <div className="relative" ref={toggleRef}>
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-indigo-950/60 text-white backdrop-blur-sm hover:bg-indigo-950/60 cursor-pointer transition-all duration-300 ease-in-out"
+                  onClick={() => setToggle(!toggle)}
+                >
+                  {emailFirstLetter ? emailFirstLetter : <FiUser size={20} />}
+                </div>
 
-          <div className="flex items-center gap-6">
-            <FaShoppingCart
-              size={22}
-              className="cursor-pointer text-white/80 hover:text-white transition"
-            />
+                {toggle && (
+                  <div className="absolute right-0 top-14 min-w-[220px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                    {token && (
+                      <>
+                        <Link href="/user">
+                          <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
+                            <FiUser size={18} />
+                            <span>My Profile</span>
+                          </button>
+                        </Link>
 
-            <FaRegMessage
-              size={20}
-              className="cursor-pointer text-white/80 hover:text-white transition"
-            />
+                        <Link href="/orders">
+                          <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
+                            <FiPackage size={18} />
+                            <span>My Orders</span>
+                          </button>
+                        </Link>
 
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm">
-              S
+                        <Link href="/address">
+                          <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
+                            <FiMapPin size={18} />
+                            <span>My Address</span>
+                          </button>
+                        </Link>
+                      </>
+                    )}
+
+                    {token ? (
+                      <button
+                        className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-red-100 transition "
+                        onClick={handleLogout}
+                      >
+                        <FiLogOut size={18} />
+                        <span>Logout</span>
+                      </button>
+                    ) : (
+                      <Link href="/login">
+                        <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
+                          <FiLogIn size={18} />
+                          <span>Login</span>
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 

@@ -1,20 +1,21 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import axios from "axios";
 import { getUserFromToken } from "@/app/utils/getRoleFromToken";
 import { useRouter } from "next/navigation";
-import { showToast } from "@/app/utils/swal";
+import { showToast } from "../../utils/swal";
+import { apiRequest } from "../../utils/commonApi";
+import { FaEyeSlash } from "react-icons/fa";
+import { IoEyeSharp } from "react-icons/io5";
 
 const Login = () => {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
   const [data, setData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState({});
-
+  const [toggle, setToggle] = useState(false);
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
@@ -35,8 +36,6 @@ const Login = () => {
     // password validation
     if (!data.password.trim()) {
       error.password = "Please enter your password";
-    } else if (data.password.length < 8) {
-      error.password = "Password must be at least 8 characters";
     }
 
     setError(error);
@@ -51,24 +50,27 @@ const Login = () => {
       return;
     }
     try {
-      const res = await axios.post(`${BASE_URL}/api/user/login`, data);
-      localStorage.setItem("token", res.data.token);
-
+      const res = await apiRequest("/api/user/login", "post", data);
+      console.log(res);
+      localStorage.setItem("token", res.token);
+      localStorage.setItem("email", res.email);
       // getting role from token
-      const user = getUserFromToken(res.data.token);
+      const user = getUserFromToken(res.token);
 
       showToast({
         icon: "success",
-        title: res.data.message,
+        title: res.message,
       });
 
       // navigate based on role
       if (user?.role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/user");
+        router.push("/");
       }
     } catch (error) {
+      console.log("Data:", error.response?.data);
+
       showToast({
         icon: "error",
         title: error.response?.data?.message,
@@ -114,17 +116,30 @@ const Login = () => {
             <label className="text-sm font-medium text-gray-300">
               Password
             </label>
+            <div className="relative">
+              <input
+                type={toggle ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                className={`w-full px-4 py-3 bg-black/20 text-white rounded-xl border placeholder-gray-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
+                  error.password ? "border-red-500" : "border-white/10"
+                }`}
+                value={data.password}
+                onChange={handleChange}
+              />
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className={`w-full px-4 py-3 bg-black/20 text-white rounded-xl border placeholder-gray-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
-                error.password ? "border-red-500" : "border-white/10"
-              }`}
-              value={data.password}
-              onChange={handleChange}
-            />
+              {toggle ? (
+                < IoEyeSharp
+                  onClick={() => setToggle(!toggle)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white"
+                />
+              ) : (
+                <FaEyeSlash
+                  onClick={() => setToggle(!toggle)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white"
+                />
+              )}
+            </div>
             {error.password && (
               <span className="text-red-400 text-sm">{error.password}</span>
             )}
@@ -132,7 +147,7 @@ const Login = () => {
 
           <div className="flex justify-end">
             <Link
-              href={"/forgot"}
+              href={"/forgot-password"}
               className="text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
             >
               Forgot Password?

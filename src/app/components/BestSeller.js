@@ -7,18 +7,20 @@ import { apiRequest } from "../utils/commonApi";
 
 const BestSellerProducts = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getAllData = async () => {
     try {
       const res = await apiRequest("/api/product/allBestSellerProduct", "get");
-      console.log(res.data);
       setData(res.data);
     } catch (e) {
       console.log(e);
       showToast({
         icon: "error",
-        title: "fetching error",
+        title: e?.response?.data?.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,13 +34,13 @@ const BestSellerProducts = () => {
           Best Selling Products
         </h2>
         <Link
-          href="/shop"
+          href="/product"
           className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
         >
           See All
         </Link>
       </div>
-      <Swipper data={data} variant="thumbs" />
+      <Swipper data={data} variant="thumbs" loading={loading} />
     </section>
   );
 };

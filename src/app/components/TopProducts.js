@@ -7,6 +7,7 @@ import { apiRequest } from "../utils/commonApi";
 
 const TopSellerProducts = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getAllData = async () => {
     try {
@@ -17,8 +18,10 @@ const TopSellerProducts = () => {
       console.log(e);
       showToast({
         icon: "error",
-        title: "fetching error",
+        title:e?.response?.data?.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,13 +35,13 @@ const TopSellerProducts = () => {
           Top Selling Products
         </h2>
         <Link
-          href="/shop"
+          href="/product"
           className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
         >
           See All
         </Link>
       </div>
-      <Swipper data={data} variant="product" />
+      <Swipper data={data} variant="product" loading={loading}/>
     </section>
   );
 };

@@ -7,18 +7,19 @@ import { apiRequest } from "../utils/commonApi";
 
 const TrendingProducts = () => {
   const [data, setData] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const getAllData = async () => {
     try {
       const res = await apiRequest("/api/product/allTrendingProduct", "get");
-      console.log(res.data);
       setData(res.data);
     } catch (e) {
       console.log(e);
       showToast({
         icon: "error",
-        title: "fetching error",
+        title: e?.response?.data?.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -30,13 +31,13 @@ const TrendingProducts = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Trending Products</h2>
         <Link
-          href="/shop"
+          href="/product"
           className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
         >
           See All
         </Link>
       </div>
-      <Swipper data={data} variant="product" />
+      <Swipper data={data} variant="product" loading={loading}/>
     </section>
   );
 };

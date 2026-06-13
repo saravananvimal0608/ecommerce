@@ -2,7 +2,13 @@
 
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
+import {
+  Pagination,
+  Autoplay,
+  FreeMode,
+  Navigation,
+  Thumbs,
+} from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
 import { CiShoppingCart } from "react-icons/ci";
@@ -12,15 +18,23 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
+import SkeletonLoader from "../utils/skeleton";
 
-export default function Swipper({ data = [], variant = "banner" }) {
+export default function Swipper({ data = [], variant = "banner", loading }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
+  if (loading) {
+    return <SkeletonLoader variant={variant} />;
+  }
 
   if (variant === "thumbs") {
     return (
       <div>
         <Swiper
-          style={{ "--swiper-navigation-color": "#fff", "--swiper-pagination-color": "#fff" }}
+          style={{
+            "--swiper-navigation-color": "#fff",
+            "--swiper-pagination-color": "#fff",
+          }}
           spaceBetween={10}
           navigation={true}
           thumbs={{ swiper: thumbsSwiper }}
@@ -56,7 +70,10 @@ export default function Swipper({ data = [], variant = "banner" }) {
           className="thumbs-swiper"
         >
           {data.map((item) => (
-            <SwiperSlide key={item._id} className="cursor-pointer opacity-50 [&.swiper-slide-thumb-active]:opacity-100">
+            <SwiperSlide
+              key={item._id}
+              className="cursor-pointer opacity-50 [&.swiper-slide-thumb-active]:opacity-100"
+            >
               <div className="relative h-20 rounded-lg overflow-hidden">
                 <Image
                   src={item.images[0]}
@@ -113,7 +130,7 @@ export default function Swipper({ data = [], variant = "banner" }) {
                     {item.name}
                   </h3>
 
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                  <p className="text-sm text-gray-500 mt-1 elipsis-description">
                     {item.description}
                   </p>
 
