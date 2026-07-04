@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { apiRequest } from "../utils/commonApi";
 import Image from "next/image";
 import { useSearch } from "../context/SearchContext";
@@ -11,7 +11,7 @@ import NoDataFound from "../components/NoDataFound";
 
 const LIMIT = 16;
 
-const ProductPage = () => {
+const ProductPageContent = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [totalProduct, setTotalProduct] = useState(0);
@@ -300,4 +300,8 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+const ProductPage = () => (
+  <Suspense fallback={<SkeletonLoader variant="productPage" loading={true} />}>
+    <ProductPageContent />
+  </Suspense>
+);
