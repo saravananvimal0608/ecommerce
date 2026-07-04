@@ -13,6 +13,7 @@ import { apiRequest } from '../utils/commonApi';
 import { fetchCart } from '../redux/slice/cartSlice';
 import { showToast } from '../utils/swal';
 import { getUserFromToken } from '../utils/getRoleFromToken';
+import { FaHome } from "react-icons/fa";
 
 export default function MobileNavbar() {
   const dispatch = useDispatch();
@@ -159,10 +160,9 @@ export default function MobileNavbar() {
           {/* Sidebar Header: shop name + cart + close */}
           <div className="flex items-center justify-between px-5 py-4 bg-indigo-950">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white font-bold text-sm">S</div>
-                         <Link href={"/"}>
- <span className="text-white font-bold text-lg tracking-wide">E-Commerce</span>
-             </Link>
+              <Link href={"/"}>
+                <span className="text-white font-bold text-lg tracking-wide">E-Commerce</span>
+              </Link>
 
             </div>
             <div className="flex items-center gap-3">
@@ -232,16 +232,14 @@ export default function MobileNavbar() {
                     <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">My Address</span>
                   </div>
                 </Link>
-                <Link href="/cart" onClick={() => setDrawerOpen(false)}>
+                <Link href="/" onClick={() => setDrawerOpen(false)}>
                   <div className="flex items-center gap-4 px-5 py-3.5 hover:bg-indigo-50 transition group">
                     <div className="w-9 h-9 rounded-xl bg-pink-100 flex items-center justify-center group-hover:bg-pink-200 transition">
-                      <FaShoppingCart size={16} className="text-pink-500" />
+                      <FaHome size={16} className="text-pink-500" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">My Cart</span>
-                      {cartItems?.length > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{cartItems.length}</span>
-                      )}
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">Home</span>
+                                    
                     </div>
                   </div>
                 </Link>

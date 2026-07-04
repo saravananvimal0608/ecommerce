@@ -45,7 +45,7 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
           {data.map((item) => (
             <SwiperSlide key={item._id}>
               <Link href={`/product/${item._id}`}>
-                <div className="relative h-80 w-full">
+                <div className="relative h-48 sm:h-64 md:h-80 w-full">
                   <Image
                     src={item.images[0]}
                     alt={item.name}
@@ -63,8 +63,12 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
         </Swiper>
         <Swiper
           onSwiper={setThumbsSwiper}
-          spaceBetween={10}
-          slidesPerView={4}
+          spaceBetween={8}
+          slidesPerView={3}
+          breakpoints={{
+            480: { slidesPerView: 4 },
+            768: { slidesPerView: 5 },
+          }}
           freeMode={true}
           watchSlidesProgress={true}
           modules={[FreeMode, Navigation, Thumbs]}
@@ -75,7 +79,7 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
               key={item._id}
               className="cursor-pointer opacity-50 [&.swiper-slide-thumb-active]:opacity-100"
             >
-              <div className="relative h-20 rounded-lg overflow-hidden">
+              <div className="relative h-14 sm:h-20 rounded-lg overflow-hidden">
                 <Image
                   src={item.images[0]}
                   alt={item.name}

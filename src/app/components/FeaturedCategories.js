@@ -3,7 +3,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "../utils/commonApi";
-import { showToast } from "../utils/swal";
 import Link from "next/link";
 import SkeletonLoader from "../utils/skeleton";
 import NoDataFound from "./NoDataFound";
@@ -13,16 +12,14 @@ const FeaturedCategories = () => {
   const [toggle, setToggle] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const getAllCategory = async () => {
     try {
       const res = await apiRequest("/api/category/getAllCategory", "get");
       setCategories(res.data);
     } catch (e) {
-      showToast({
-        icon: "error",
-        title: e.response?.data?.message,
-      });
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -49,6 +46,8 @@ const FeaturedCategories = () => {
 
       {loading ? (
         <SkeletonLoader variant="category" loading={loading}/>
+      ) : error ? (
+        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
       ) : categories.length === 0 ? (
         <div className="flex justify-center">
           <NoDataFound message="No Categories Found" />

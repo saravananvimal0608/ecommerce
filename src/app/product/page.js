@@ -23,6 +23,7 @@ const ProductPageContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const totalPages = Math.ceil(totalProduct / LIMIT);
   const categoryId = searchParams.get("category");
@@ -44,7 +45,7 @@ const ProductPageContent = () => {
       setTotalProduct(res.totalProducts);
       setProducts(res.data);
     } catch (e) {
-      console.log(e);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,7 @@ const ProductPageContent = () => {
       setTotalProduct(res.totalProducts);
       setProducts(res.data);
     } catch (e) {
-      console.log(e);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -70,6 +71,7 @@ const ProductPageContent = () => {
 
   useEffect(() => {
     setPage(1);
+    setError(false);
   }, [search, selectedCategory, price]);
 
   useEffect(() => {
@@ -151,7 +153,7 @@ const ProductPageContent = () => {
       {filterOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setFilterOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl p-5 overflow-y-auto z-50 mt-[100px] md:mt-0">
+          <div className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl p-5 overflow-y-auto z-50">
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-xl font-bold">Filters</h2>
               <button onClick={() => setFilterOpen(false)} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
@@ -188,6 +190,8 @@ const ProductPageContent = () => {
           </div>
           {loading ? (
             <SkeletonLoader variant="productPage" loading={loading} />
+          ) : error ? (
+            <p className="text-center text-red-500 py-10">Something went wrong. Please try again later.</p>
           ) : products.length === 0 ? <NoDataFound /> : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {products?.map((product) => (

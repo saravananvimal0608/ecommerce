@@ -34,6 +34,7 @@ const ProductPage = () => {
   const ratingRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -56,7 +57,6 @@ const ProductPage = () => {
   };
 
   const handleSubmitRating = async () => {
-    const token = localStorage.getItem("token");
     if (!token) {
       showToast({ icon: "error", title: "Please login first" });
       router.push("/login");
@@ -85,6 +85,11 @@ const ProductPage = () => {
 
   const handleAddCart = async () => {
     try {
+      if (!token) {
+        showToast({ icon: "error", title: "Please login first" });
+        router.push("/login");
+        return;
+      }
       const res = await apiRequest("/api/cart/add", "post", { productId: id });
       showToast({ icon: "success", title: res?.message });
       dispatch(fetchCart());
@@ -125,6 +130,7 @@ const ProductPage = () => {
   }, [id]);
 
   const filteredImage = product?.images?.slice(1);
+  console.log('product.product_type', product.product_type)
   const galleryImages = product.product_type === "best-seller" ? filteredImage : product?.images;
   const inStock = product?.stock > 0;
   const avgRating = product?.rating || 0;
@@ -142,10 +148,10 @@ const ProductPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-6 lg:pt-15 pb-12 w-full">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-20 md:pt-15 pb-12 w-full">
       {/* Mobile image swiper — hidden on desktop */}
       <div className="block lg:hidden mb-4 rounded-2xl overflow-hidden">
-        <Swipper data={product?.images || []} variant="images" />
+        <Swipper data={galleryImages || []} variant="images" />
       </div>
 
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
@@ -156,8 +162,8 @@ const ProductPage = () => {
               key={index}
               onMouseEnter={() => setSelectedImage(img)}
               className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${selectedImage === img
-                  ? "border-indigo-500 shadow-md"
-                  : "border-gray-200 hover:border-indigo-300"
+                ? "border-indigo-500 shadow-md"
+                : "border-gray-200 hover:border-indigo-300"
                 }`}
             >
               <Image

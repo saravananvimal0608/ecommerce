@@ -16,6 +16,7 @@ export const apiRequest = async (endpoint, method, data = null, customHeaders = 
             method,
             headers,
             data,
+            timeout: 10000,
         };
 
         const response = await axios(config);

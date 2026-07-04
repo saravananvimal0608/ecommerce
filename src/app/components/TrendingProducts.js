@@ -2,23 +2,19 @@
 import React, { useState, useEffect } from "react";
 import Swipper from "./Swipper";
 import Link from "next/link";
-import { showToast } from "../utils/swal";
 import { apiRequest } from "../utils/commonApi";
 import NoDataFound from "./NoDataFound";
 
 const TrendingProducts = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const getAllData = async () => {
     try {
       const res = await apiRequest("/api/product/allTrendingProduct", "get");
       setData(res.data);
     } catch (e) {
-      console.log(e);
-      showToast({
-        icon: "error",
-        title: e?.response?.data?.message,
-      });
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -40,6 +36,8 @@ const TrendingProducts = () => {
       </div>
       {loading ? (
         <Swipper data={data} variant="product" loading={loading} />
+      ) : error ? (
+        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
       ) : data.length === 0 ? (
         <div className="flex justify-center">
           <NoDataFound message="No Trending Products Found" color="text-black" />

@@ -7,16 +7,16 @@ import { apiRequest } from '../utils/commonApi';
 
 export default function OfferProducts() {
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(false);
 
   const getOfferProducts = async () => {
     try {
       const res = await apiRequest(
         '/api/product/allOfferProduct',
       );
-
       setProducts(res.data || []);
     } catch (error) {
-      console.log(error);
+      setError(true);
     }
   };
 
@@ -26,6 +26,9 @@ export default function OfferProducts() {
 
   return (
     <section className="px-4 md:px-8">
+      {error ? (
+        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative md:-top-[35px] z-10">
         {products.map((product) => (
           <div
@@ -65,6 +68,7 @@ export default function OfferProducts() {
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }
