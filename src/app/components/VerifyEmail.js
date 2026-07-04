@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { apiRequest } from "../../utils/commonApi";
+import { apiRequest } from "../utils/commonApi";
 import Link from "next/link";
 import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi";
 import { MdMarkEmailRead } from "react-icons/md";
