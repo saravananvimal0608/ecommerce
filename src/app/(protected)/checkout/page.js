@@ -221,6 +221,9 @@ const Checkout = () => {
     }
   }, [type]);
 
+console.log('cartItems',cartItems)
+
+
   if (loading || addressLoading) {
     return <SkeletonLoader variant="checkout" loading={loading} />;
   }

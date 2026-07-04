@@ -211,7 +211,7 @@ const UserProfile = () => {
     <div className="min-h-screen common-bg px-4 py-24">
       <div className="max-w-3xl mx-auto">
         {/* Avatar Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 mb-6 flex items-center gap-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-6 mb-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           <div className="relative flex-shrink-0">
             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-indigo-500/20 border-2 border-white/10">
               {user?.avatar ? (
@@ -247,7 +247,7 @@ const UserProfile = () => {
               onChange={handleAvatarChange}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 text-center sm:text-left">
             <h2 className="text-xl font-bold text-white">{user?.name}</h2>
             <p className="text-gray-400 text-sm">{user?.email}</p>
             <span
@@ -258,14 +258,14 @@ const UserProfile = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-white hover:text-red-400 transition border border-white/10 px-4 py-2 rounded-xl hover:border-red-400/30"
+            className="flex items-center gap-2 text-sm text-white hover:text-red-400 transition border border-white/10 px-4 py-2 rounded-xl hover:border-red-400/30 w-full sm:w-auto justify-center sm:justify-start"
           >
             <FiLogOut size={15} /> Logout
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-5">
+        <div className="flex gap-2 mb-5 w-full">
           {[
             {
               key: TAB.PROFILE,
@@ -281,7 +281,7 @@ const UserProfile = () => {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition ${
+              className={`flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl text-sm font-medium transition flex-1 ${
                 tab === key
                   ? "bg-indigo-600 text-white shadow"
                   : "bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10"
@@ -294,7 +294,7 @@ const UserProfile = () => {
 
         {/* Profile Tab */}
         {tab === TAB.PROFILE && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-8">
             <h3 className="text-lg font-bold text-white mb-6">
               Personal Information
             </h3>
@@ -358,13 +358,13 @@ const UserProfile = () => {
 
         {/* Password Tab */}
         {tab === TAB.PASSWORD && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-8">
             {/* Step indicators */}
-            <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-1 sm:gap-2 mb-8 overflow-x-auto">
               {["Send OTP", "Verify OTP", "Reset Password"].map((label, i) => (
                 <React.Fragment key={i}>
                   <div
-                    className={`flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full ${fpStep === i + 1 ? "bg-indigo-600 text-white" : fpStep > i + 1 ? "bg-green-500/20 text-green-400" : "bg-white/10 text-gray-400"}`}
+                    className={`flex items-center gap-1 sm:gap-2 text-xs font-medium px-2 sm:px-3 py-1.5 rounded-full whitespace-nowrap ${fpStep === i + 1 ? "bg-indigo-600 text-white" : fpStep > i + 1 ? "bg-green-500/20 text-green-400" : "bg-white/10 text-gray-400"}`}
                   >
                     <span>{fpStep > i + 1 ? "✓" : i + 1}</span> {label}
                   </div>

@@ -39,18 +39,14 @@ body {
   border-radius: 14px;
   font-weight: 600;
   color: white;
-
   background: linear-gradient(to right, #8338f8, #d063f1, #8338f8);
   box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
-
   transition: all 0.3s ease;
 }
 
 .common-btn:hover {
   transform: translateY(-2px) scale(1.02);
-
   box-shadow: 0 15px 35px rgba(217, 70, 239, 0.45);
-
   filter: brightness(1.05);
 }
 
@@ -59,7 +55,7 @@ body {
   border-radius: 10px;
 }
 
-/* swipper block */
+/* swiper block */
 .swiper {
   width: 100%;
   height: 100%;
@@ -69,8 +65,6 @@ body {
   text-align: center;
   font-size: 18px;
   background: #444;
-
-  /* Center slide text vertically */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,14 +77,12 @@ body {
   object-fit: cover;
 }
 
-.elipsis-description{
-  white-space: nowrap; 
-  width: 218px; 
+.elipsis-description {
+  white-space: nowrap;
+  width: 218px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* globals.css */
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -100,4 +92,93 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ── Admin dark table ── */
+.admin-dark-table .ant-table { background: transparent; color: #e2e8f0; }
+.admin-dark-table .ant-table-thead > tr > th { background: #060f1e !important; color: #64748b; border-bottom: 1px solid #1e293b !important; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.admin-dark-table .ant-table-tbody > tr > td { border-bottom: 1px solid #1e293b !important; background: transparent !important; }
+.admin-dark-table .ant-table-tbody > tr:hover > td { background: #ffffff08 !important; }
+.admin-dark-table .ant-pagination { padding: 12px 16px; }
+.admin-dark-table .ant-pagination-item { background: #0f172a; border-color: #1e293b; }
+.admin-dark-table .ant-pagination-item a { color: #94a3b8; }
+.admin-dark-table .ant-pagination-item-active { border-color: #7c3aed; }
+.admin-dark-table .ant-pagination-item-active a { color: #7c3aed; }
+.admin-dark-table .ant-pagination-prev button,
+.admin-dark-table .ant-pagination-next button { background: #0f172a; border-color: #1e293b; color: #94a3b8; }
+.admin-dark-table .ant-spin-dot-item { background: #7c3aed; }
+
+/* ── Ant Design v5 Modal dark overrides ── */
+:root, .ant-modal-root, .ant-modal {
+  --ant-modal-content-bg: #0f172a !important;
+  --ant-modal-header-bg: #0f172a !important;
+  --ant-modal-footer-bg: #0f172a !important;
+  --ant-color-bg-elevated: #0f172a !important;
+  --ant-color-bg-container: #0f172a !important;
+}
+
+.ant-modal-root .ant-modal-content,
+.ant-modal-content {
+  background-color: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  color: #e2e8f0 !important;
+}
+
+.ant-modal-root .ant-modal-header,
+.ant-modal-header {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b !important;
+  border-radius: 16px 16px 0 0 !important;
+  padding: 16px 24px !important;
+  margin-bottom: 0 !important;
+}
+
+.ant-modal-root .ant-modal-title,
+.ant-modal-title {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  background-color: #0f172a !important;
+}
+
+.ant-modal-root .ant-modal-body,
+.ant-modal-body {
+  background-color: #0f172a !important;
+  padding: 16px 24px !important;
+  color: #e2e8f0 !important;
+}
+
+.ant-modal-root .ant-modal-footer,
+.ant-modal-footer {
+  background-color: #0f172a !important;
+  border-top: 1px solid #1e293b !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 12px 24px !important;
+  margin-top: 0 !important;
+}
+
+.ant-modal-root .ant-modal-close,
+.ant-modal-close {
+  color: #64748b !important;
+}
+
+.ant-modal-root .ant-modal-close:hover,
+.ant-modal-close:hover {
+  color: #ffffff !important;
+  background-color: #1e293b !important;
+}
+
+/* Cancel button dark style */
+.ant-modal-footer .ant-btn-default {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.ant-modal-footer .ant-btn-default:hover {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
 }

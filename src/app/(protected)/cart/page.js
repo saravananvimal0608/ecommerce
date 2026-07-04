@@ -140,7 +140,7 @@ const CartPage = () => {
 
   console.log("items", cartItems);
   return (
-    <div className="max-w-7xl mx-auto pt-24 pb-12 px-6">
+    <div className="max-w-7xl mx-auto pt-6 md:pt-24 pb-12 px-4 md:px-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">
         Shopping Cart{" "}
         <span className="text-gray-400 text-lg font-normal">
@@ -154,14 +154,14 @@ const CartPage = () => {
           {cartItems?.map((d) => (
             <div
               key={d._id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex gap-4 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-4 flex gap-3 sm:gap-4 hover:shadow-md transition-shadow"
             >
               {/* Image */}
               <Link
                 href={`/product/${d?.productId?._id}`}
                 className="flex-shrink-0"
               >
-                <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-gray-100">
+                <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-100">
                   {d?.productId?.images?.[0] ? (
                     <Image
                       src={d.productId.images[0]}
@@ -198,8 +198,8 @@ const CartPage = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between mt-3">
-                  <p className="text-lg font-bold text-indigo-600">
+                <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
+                  <p className="text-base sm:text-lg font-bold text-indigo-600">
                     ₹{d?.productId?.price}
                   </p>
 
@@ -207,16 +207,16 @@ const CartPage = () => {
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                     <button
                       onClick={() => handleDecrease(d._id, d.quantity)}
-                      className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition font-bold"
+                      className="px-2.5 py-1 sm:px-3 sm:py-1.5 text-gray-600 hover:bg-gray-100 transition font-bold"
                     >
                       −
                     </button>
-                    <span>{d?.quantity}</span>
+                    <span className="px-1 text-sm">{d?.quantity}</span>
                     <button
                       onClick={() =>
                         handleIncrease(d?._id, d?.quantity, d?.productId?.stock)
                       }
-                      className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition font-bold"
+                      className="px-2.5 py-1 sm:px-3 sm:py-1.5 text-gray-600 hover:bg-gray-100 transition font-bold"
                     >
                       +
                     </button>

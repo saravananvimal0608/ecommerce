@@ -4,6 +4,7 @@ import Swipper from "./Swipper";
 import Link from "next/link";
 import { showToast } from "../utils/swal";
 import { apiRequest } from "../utils/commonApi";
+import NoDataFound from "./NoDataFound";
 
 const BestSellerProducts = () => {
   const [data, setData] = useState([]);
@@ -41,6 +42,11 @@ const BestSellerProducts = () => {
         </Link>
       </div>
       <Swipper data={data} variant="thumbs" loading={loading} />
+      {!loading && data.length === 0 && (
+        <div className="flex justify-center">
+          <NoDataFound message="No Best Selling Products Found" />
+        </div>
+      )}
     </section>
   );
 };

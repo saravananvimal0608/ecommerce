@@ -6,6 +6,7 @@ import { apiRequest } from "../utils/commonApi";
 import { showToast } from "../utils/swal";
 import Link from "next/link";
 import SkeletonLoader from "../utils/skeleton";
+import NoDataFound from "./NoDataFound";
 
 const FeaturedCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -48,6 +49,10 @@ const FeaturedCategories = () => {
 
       {loading ? (
         <SkeletonLoader variant="category" loading={loading}/>
+      ) : categories.length === 0 ? (
+        <div className="flex justify-center">
+          <NoDataFound message="No Categories Found" />
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {displayCategories.map((category) => (

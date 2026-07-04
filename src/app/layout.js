@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import MobileNavbar from "./components/MobileNavbar";
 import Footer from "./components/Footer";
 import { SearchProvider } from "./context/SearchContext";
 import Providers from "./redux/provider/provider";
@@ -28,10 +29,11 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col ">{/* pt-[110px] md:pt-0 */}
         <Providers>
           <SearchProvider>
             <Navbar />
+            <MobileNavbar />
             {children}
             <Footer />
           </SearchProvider>
@@ -40,7 +42,7 @@ export default function RootLayout({ children }) {
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="lazyOnload"
         />
-        
+
       </body>
     </html>
   );

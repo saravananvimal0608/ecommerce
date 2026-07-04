@@ -17,7 +17,8 @@ const Footer = () => {
     pathname === "/register" ||
     pathname === "/forgot-password" ||
     pathname === "/verify-otp" ||
-    pathname === "/reset-password";
+    pathname === "/reset-password" ||
+    pathname.startsWith("/admin");
 
   return (
     !showFooter && (
@@ -25,7 +26,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Company Info */}
           <div>
-            <h1 className="text-3xl font-bold mb-4">Simply</h1>
+            <h1 className="text-3xl font-bold mb-4">E-Commerce</h1>
             <p className="text-gray-300 leading-7">
               Premium furniture and home decor products designed to bring
               comfort and elegance to your living space.

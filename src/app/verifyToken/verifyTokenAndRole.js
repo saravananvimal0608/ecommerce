@@ -17,7 +17,7 @@ const VerifyTokenAndRole = () => {
       return;
     }
 
-    if (role === "admin") {
+    if (role?.role === "admin") {
       router.push("/admin");
     } else {
       router.push("/user");

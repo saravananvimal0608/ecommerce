@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { fetchCart } from "../../redux/slice/cartSlice";
 import { useDispatch } from "react-redux";
 import SkeletonLoader from "@/app/utils/skeleton";
+
 const ProductPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -33,9 +34,9 @@ const ProductPage = () => {
   const ratingRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+
   const handleMouseMove = (e) => {
-    const { left, top, width, height } =
-      e.currentTarget.getBoundingClientRect();
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     setZoomPosition({
       x: ((e.clientX - left) / width) * 100,
       y: ((e.clientY - top) / height) * 100,
@@ -56,13 +57,8 @@ const ProductPage = () => {
 
   const handleSubmitRating = async () => {
     const token = localStorage.getItem("token");
-    console.log(token);
     if (!token) {
-      showToast({
-        icon: "error",
-        title: "Please login first",
-      });
-
+      showToast({ icon: "error", title: "Please login first" });
       router.push("/login");
       return;
     }
@@ -70,13 +66,11 @@ const ProductPage = () => {
       showToast({ icon: "error", title: "Please select a rating" });
       return;
     }
-
     try {
       setSubmitting(true);
       const res = await apiRequest(`/api/product/rating/${id}`, "post", {
         rating: selectedRating,
       });
-
       showToast({ icon: "success", title: "Rating submitted!" });
       setProduct((prev) => ({ ...prev, rating: res.averageRating }));
       setShowRating(false);
@@ -92,26 +86,18 @@ const ProductPage = () => {
   const handleAddCart = async () => {
     try {
       const res = await apiRequest("/api/cart/add", "post", { productId: id });
-      showToast({
-        icon: "success",
-        title: res?.message,
-      });
+      showToast({ icon: "success", title: res?.message });
       dispatch(fetchCart());
     } catch (e) {
-      showToast({
-        icon: "error",
-        title: e.response?.data?.message,
-      });
+      showToast({ icon: "error", title: e.response?.data?.message });
     }
   };
 
   const handleBuyNow = (product) => {
     localStorage.setItem("buyNowProduct", JSON.stringify(product));
-
     router.push("/checkout?type=buyNow");
   };
 
-  // close rating popup on outside click
   useEffect(() => {
     const handleOutside = (e) => {
       if (ratingRef.current && !ratingRef.current.contains(e.target)) {
@@ -122,15 +108,24 @@ const ProductPage = () => {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  const handleRelatedProduct = async () => {
+    try {
+      const res = await apiRequest(`/api/product/relatedProducts/${id}`);
+      setRelatedProduct(res.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       handleFetch();
-      apiRequest(`/api/product/relatedProducts/${id}`)
-        .then((res) => setRelatedProduct(res.data))
-        .catch(console.log);
+      handleRelatedProduct();
     }
   }, [id]);
 
+  const filteredImage = product?.images?.slice(1);
+  const galleryImages = product.product_type === "best-seller" ? filteredImage : product?.images;
   const inStock = product?.stock > 0;
   const avgRating = product?.rating || 0;
 
@@ -138,9 +133,7 @@ const ProductPage = () => {
     [1, 2, 3, 4, 5].map((star) => (
       <FaStar
         key={star}
-        className={
-          star <= Math.round(rating) ? "text-yellow-400" : "text-gray-300"
-        }
+        className={star <= Math.round(rating) ? "text-yellow-400" : "text-gray-300"}
       />
     ));
 
@@ -149,18 +142,23 @@ const ProductPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-15 pb-12">
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-1 flex flex-col gap-2">
-          {product?.images?.map((img, index) => (
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-6 lg:pt-15 pb-12 w-full">
+      {/* Mobile image swiper — hidden on desktop */}
+      <div className="block lg:hidden mb-4 rounded-2xl overflow-hidden">
+        <Swipper data={product?.images || []} variant="images" />
+      </div>
+
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
+        {/* Thumbnail column — desktop only */}
+        <div className="hidden lg:flex lg:col-span-1 flex-col gap-2">
+          {galleryImages?.map((img, index) => (
             <div
               key={index}
               onMouseEnter={() => setSelectedImage(img)}
-              className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${
-                selectedImage === img
+              className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${selectedImage === img
                   ? "border-indigo-500 shadow-md"
                   : "border-gray-200 hover:border-indigo-300"
-              }`}
+                }`}
             >
               <Image
                 src={img}
@@ -173,7 +171,8 @@ const ProductPage = () => {
           ))}
         </div>
 
-        <div className="col-span-5 relative">
+        {/* Main image — desktop only */}
+        <div className="hidden lg:block lg:col-span-5 relative">
           <div
             className="relative rounded-2xl overflow-hidden border border-gray-200 bg-white cursor-crosshair"
             onMouseMove={handleMouseMove}
@@ -194,6 +193,7 @@ const ProductPage = () => {
             </div>
           </div>
 
+          {/* Zoom preview — desktop only */}
           {showZoom && selectedImage && (
             <div className="absolute left-[calc(100%+16px)] top-0 w-[420px] h-[500px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl z-50">
               <div
@@ -208,19 +208,19 @@ const ProductPage = () => {
           )}
         </div>
 
-        <div className="col-span-6 space-y-4">
+        {/* Product details */}
+        <div className="lg:col-span-6 space-y-4">
           <div>
             <p className="text-xs text-indigo-600 font-semibold uppercase tracking-widest mb-1">
               {product?.product_type}
             </p>
-            <h1 className="text-2xl font-bold text-gray-900 leading-snug">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">
               {product?.name}
             </h1>
             <div className="flex items-center gap-2 mt-2">
               <div className="flex text-sm">{renderStars(avgRating)}</div>
               <span className="text-sm text-gray-500">
-                ({avgRating.toFixed(1)}) · {product?.ratings?.length || 0}{" "}
-                reviews
+                ({avgRating.toFixed(1)}) · {product?.ratings?.length || 0} reviews
               </span>
             </div>
           </div>
@@ -228,48 +228,34 @@ const ProductPage = () => {
           <hr className="border-gray-200" />
 
           <div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">
               ₹{product?.price}
             </p>
             <p className="text-sm text-gray-500 mt-1">Inclusive of all taxes</p>
           </div>
 
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {product?.description}
-          </p>
+          <p className="text-sm text-gray-600 leading-relaxed">{product?.description}</p>
 
           <hr className="border-gray-200" />
 
           <div className="space-y-2 text-sm">
             <div className="flex gap-2">
-              <span className="font-semibold text-gray-700 w-28">
-                Category:
-              </span>
+              <span className="font-semibold text-gray-700 w-28">Category:</span>
               <span className="text-gray-600">
                 {product?.category?.map((c) => c.name).join(", ")}
               </span>
             </div>
             {product?.subCategory?.length > 0 && (
               <div className="flex gap-2">
-                <span className="font-semibold text-gray-700 w-28">
-                  Sub Category:
-                </span>
+                <span className="font-semibold text-gray-700 w-28">Sub Category:</span>
                 <span className="text-gray-600">
                   {product.subCategory.map((s) => s.name).join(", ")}
                 </span>
               </div>
             )}
             <div className="flex gap-2">
-              <span className="font-semibold text-gray-700 w-28">
-                Availability:
-              </span>
-              <span
-                className={
-                  inStock
-                    ? "text-green-600 font-semibold"
-                    : "text-red-500 font-semibold"
-                }
-              >
+              <span className="font-semibold text-gray-700 w-28">Availability:</span>
+              <span className={inStock ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
                 {inStock ? `In Stock (${product?.stock} left)` : "Out of Stock"}
               </span>
             </div>
@@ -287,10 +273,8 @@ const ProductPage = () => {
               </button>
 
               {showRating && (
-                <div className="absolute right-0 top-12 z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-5 w-64">
-                  <h4 className="text-sm font-bold text-gray-800 mb-3">
-                    Your Rating
-                  </h4>
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-12 z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-5 w-64">
+                  <h4 className="text-sm font-bold text-gray-800 mb-3">Your Rating</h4>
                   <div className="flex gap-1 justify-center mb-4">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -340,32 +324,18 @@ const ProductPage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             {[
-              {
-                icon: <FiTruck size={18} />,
-                label: "Free Delivery",
-                sub: "On orders above ₹499",
-              },
-              {
-                icon: <FiRotateCcw size={18} />,
-                label: "Easy Returns",
-                sub: "7 day return policy",
-              },
-              {
-                icon: <FiShield size={18} />,
-                label: "Secure Payment",
-                sub: "100% protected",
-              },
+              { icon: <FiTruck size={18} />, label: "Free Delivery", sub: "On orders above ₹499" },
+              { icon: <FiRotateCcw size={18} />, label: "Easy Returns", sub: "7 day return policy" },
+              { icon: <FiShield size={18} />, label: "Secure Payment", sub: "100% protected" },
             ].map(({ icon, label, sub }) => (
               <div
                 key={label}
                 className="flex flex-col items-center text-center border border-gray-200 rounded-xl p-3 bg-white shadow-sm"
               >
                 <span className="text-indigo-600 mb-1">{icon}</span>
-                <span className="text-xs font-semibold text-gray-800">
-                  {label}
-                </span>
+                <span className="text-xs font-semibold text-gray-800">{label}</span>
                 <span className="text-[10px] text-gray-500">{sub}</span>
               </div>
             ))}
@@ -373,13 +343,10 @@ const ProductPage = () => {
         </div>
       </div>
 
-      <section className="mt-16">
+      <section className="mt-10 lg:mt-16">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Related Products</h2>
-          <Link
-            href="/shop"
-            className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
-          >
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">Related Products</h2>
+          <Link href="/product" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
             See All
           </Link>
         </div>

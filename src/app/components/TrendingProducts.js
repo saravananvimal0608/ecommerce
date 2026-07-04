@@ -4,6 +4,7 @@ import Swipper from "./Swipper";
 import Link from "next/link";
 import { showToast } from "../utils/swal";
 import { apiRequest } from "../utils/commonApi";
+import NoDataFound from "./NoDataFound";
 
 const TrendingProducts = () => {
   const [data, setData] = useState([]);
@@ -37,7 +38,15 @@ const TrendingProducts = () => {
           See All
         </Link>
       </div>
-      <Swipper data={data} variant="product" loading={loading}/>
+      {loading ? (
+        <Swipper data={data} variant="product" loading={loading} />
+      ) : data.length === 0 ? (
+        <div className="flex justify-center">
+          <NoDataFound message="No Trending Products Found" color="text-black" />
+        </div>
+      ) : (
+        <Swipper data={data} variant="product" loading={loading} />
+      )}
     </section>
   );
 };

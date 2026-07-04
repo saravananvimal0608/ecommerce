@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import SkeletonLoader from "../utils/skeleton";
+import NoDataFound from "../components/NoDataFound";
 
 const LIMIT = 16;
 
@@ -17,6 +18,7 @@ const ProductPage = () => {
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [price, setPrice] = useState(10000);
+  const [filterOpen, setFilterOpen] = useState(false);
   const { search } = useSearch(); // context hook navbar search state changes reflect in this page
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -99,69 +101,94 @@ const ProductPage = () => {
     return pages;
   };
 
+  const FilterContent = () => (
+    <>
+      <div className="mb-8">
+        <h3 className="font-semibold text-lg mb-3">Categories</h3>
+        <div className="space-y-2 max-h-72 overflow-y-auto">
+          <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
+            <input
+              type="radio"
+              name="category"
+              checked={selectedCategory === ""}
+              onChange={() => { setSelectedCategory(""); router.push("/product"); setFilterOpen(false); }}
+              className="accent-indigo-600"
+            />
+            <span className="text-sm">All</span>
+          </label>
+          {categories.map((category) => (
+            <label key={category._id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
+              <input
+                type="radio"
+                name="category"
+                checked={selectedCategory === category._id}
+                onChange={() => { setSelectedCategory(category._id); setFilterOpen(false); }}
+                className="accent-indigo-600"
+              />
+              <span className="text-sm">{category.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-lg mb-3">Price Range</h3>
+        <input
+          type="range" min="0" max="10000" value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          className="w-full accent-indigo-600"
+        />
+        <div className="flex justify-between text-sm text-gray-500 mt-2">
+          <span>₹0</span>
+          <span>₹{price}</span>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <div className="my-10 w-full px-6 flex gap-8">
-        {/* Sidebar */}
-        <div className="w-56 flex-shrink-0 bg-white shadow-lg rounded-xl p-5 h-fit sticky top-20">
+      {/* Mobile Filter Drawer Overlay */}
+      {filterOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setFilterOpen(false)} />
+          <div className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl p-5 overflow-y-auto z-50 mt-[100px] md:mt-0">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-bold">Filters</h2>
+              <button onClick={() => setFilterOpen(false)} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+            </div>
+            <FilterContent />
+          </div>
+        </div>
+      )}
+
+      <div className="my-6 w-full px-4 md:px-6 flex gap-6">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block w-56 flex-shrink-0 bg-white shadow-lg rounded-xl p-5 h-fit sticky top-20">
           <h2 className="text-xl font-bold mb-5">Filters</h2>
-
-          <div className="mb-8">
-            <h3 className="font-semibold text-lg mb-3">Categories</h3>
-            <div className="space-y-2 max-h-72 overflow-y-auto">
-              <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
-                <input
-                  type="radio"
-                  name="category"
-                  checked={selectedCategory === ""}
-                  onChange={() => {
-                    setSelectedCategory("");
-                    router.push("/product");
-                  }}
-                  className="accent-indigo-600"
-                />
-                <span className="text-sm">All</span>
-              </label>
-              {categories.map((category) => (
-                <label
-                  key={category._id}
-                  className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg"
-                >
-                  <input
-                    type="radio"
-                    name="category"
-                    checked={selectedCategory === category._id}
-                    onChange={() => setSelectedCategory(category._id)}
-                    className="accent-indigo-600"
-                  />
-                  <span className="text-sm">{category.name}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-3">Price Range</h3>
-            <input
-              type="range"
-              min="0"
-              max="10000"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full accent-indigo-600"
-            />
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>₹0</span>
-              <span>₹{price}</span>
-            </div>
-          </div>
+          <FilterContent />
         </div>
 
         {/* Products */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 mt-[40px] md:mt-0">
+          {/* Mobile Filter Toggle */}
+          <div className="flex items-center justify-between mb-4 lg:hidden">
+            <button
+              onClick={() => setFilterOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium shadow-sm hover:bg-gray-50"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+              </svg>
+              Filters
+              {(selectedCategory || price < 10000) && (
+                <span className="bg-indigo-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">!</span>
+              )}
+            </button>
+            <p className="text-sm text-gray-500">{totalProduct} results</p>
+          </div>
           {loading ? (
             <SkeletonLoader variant="productPage" loading={loading} />
-          ) : (
+          ) : products.length === 0 ? <NoDataFound /> : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {products?.map((product) => (
                 <Link href={`/product/${product._id}`} key={product._id}>
@@ -231,11 +258,10 @@ const ProductPage = () => {
                 <button
                   key={p}
                   onClick={() => setPage(p)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
-                    p === page
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "border-gray-300 hover:bg-gray-100"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${p === page
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "border-gray-300 hover:bg-gray-100"
+                    }`}
                 >
                   {p}
                 </button>

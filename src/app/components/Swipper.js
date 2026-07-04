@@ -19,6 +19,7 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import SkeletonLoader from "../utils/skeleton";
+import NoDataFound from "./NoDataFound";
 
 export default function Swipper({ data = [], variant = "banner", loading }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -89,7 +90,28 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
     );
   }
 
+  if (variant === "images") {
+    return (
+      <Swiper
+        pagination={{ clickable: true }}
+        modules={[Pagination]}
+        spaceBetween={0}
+        slidesPerView={1}
+        className="rounded-2xl overflow-hidden"
+      >
+        {data.map((src, i) => (
+          <SwiperSlide key={i}>
+            <div className="relative w-full h-72">
+              <Image src={src} alt={`image-${i}`} fill className="object-cover" />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    );
+  }
+
   if (variant === "product") {
+    if (data.length === 0) return <NoDataFound message="No Related Products Found" />;
     return (
       <Swiper
         pagination={{ clickable: true }}
@@ -151,55 +173,60 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
   }
 
   // default: banner
+  console.log("data length", data)
   return (
-    <div className="relative">
-      <Swiper
-        pagination={{ clickable: true }}
-        modules={[Pagination, Autoplay]}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-        className="h-screen"
-      >
-        {data.map((item) => (
-          <SwiperSlide key={item.id}>
-            <div className="relative h-screen w-full">
-              <Image
-                src={item.img}
-                alt={item.alt || "Banner"}
-                fill
-                priority
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-              <div className="absolute left-10 md:left-20 top-1/2 -translate-y-1/2 z-10 max-w-xl text-white">
-                <p className="mb-2 text-sm md:text-base tracking-wider uppercase">
-                  {item.para1}
-                </p>
-                <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                  {item.heading1}
-                </h1>
-                {item.heading2 && (
-                  <h2 className="mt-2 text-2xl md:text-4xl font-semibold">
-                    {item.heading2}
-                  </h2>
-                )}
-                <p className="mt-4 text-sm md:text-lg text-white/80">
-                  {item.para2}
-                </p>
-                {item.link && (
-                  <div className="mt-8">
-                    <Link
-                      href={item.link}
-                      className="inline-block rounded-full bg-white px-8 py-3 text-black font-medium transition hover:scale-105"
-                    >
-                      Shop Now
-                    </Link>
+    <>
+      {data.length === 0 ? <NoDataFound /> :
+        <div className="relative">
+          <Swiper
+            pagination={{ clickable: true }}
+            modules={[Pagination, Autoplay]}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            className="h-[55vw] min-h-[280px] max-h-screen"
+          >
+            {data.map((item) => (
+              <SwiperSlide key={item.id}>
+                <div className="relative h-[55vw] min-h-[280px] max-h-screen w-full">
+                  <Image
+                    src={item.img}
+                    alt={item.alt || "Banner"}
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                  <div className="absolute left-5 sm:left-10 md:left-20 top-1/2 -translate-y-1/2 z-10 max-w-[60%] sm:max-w-xl text-white">
+                    <p className="mb-1 sm:mb-2 text-xs sm:text-sm md:text-base tracking-wider uppercase">
+                      {item.para1}
+                    </p>
+                    <h1 className="text-xl sm:text-4xl md:text-6xl font-bold leading-tight">
+                      {item.heading1}
+                    </h1>
+                    {item.heading2 && (
+                      <h2 className="mt-1 sm:mt-2 text-base sm:text-2xl md:text-4xl font-semibold">
+                        {item.heading2}
+                      </h2>
+                    )}
+                    <p className="mt-2 sm:mt-4 text-xs sm:text-sm md:text-lg text-white/80 hidden sm:block">
+                      {item.para2}
+                    </p>
+                    {item.link && (
+                      <div className="mt-4 sm:mt-8">
+                        <Link
+                          href={item.link}
+                          className="inline-block rounded-full bg-white px-4 sm:px-8 py-2 sm:py-3 text-black text-xs sm:text-base font-medium transition hover:scale-105"
+                        >
+                          Shop Now
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      }
+    </>
   );
 }
