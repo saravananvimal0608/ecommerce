@@ -45,11 +45,14 @@ export default function MobileNavbar() {
     pathname.startsWith('/product/');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const syncAuth = () => {
       setEmail(localStorage.getItem('email') || '');
       setToken(localStorage.getItem('token') || '');
-    }
-  }, []);
+    };
+    syncAuth();
+    window.addEventListener('storage', syncAuth);
+    return () => window.removeEventListener('storage', syncAuth);
+  }, [pathname]);
 
   useEffect(() => {
     if (token) {

@@ -117,11 +117,14 @@ const Navbar = () => {
     }
   }, [token]);
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    const syncAuth = () => {
       setEmail(localStorage.getItem("email") || "");
       setToken(localStorage.getItem("token") || "");
-    }
-  }, []);
+    };
+    syncAuth();
+    window.addEventListener("storage", syncAuth);
+    return () => window.removeEventListener("storage", syncAuth);
+  }, [pathname]);
 
   console.log('role',role)
   return (

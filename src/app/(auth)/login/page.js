@@ -54,6 +54,7 @@ const Login = () => {
       console.log(res);
       localStorage.setItem("token", res.token);
       localStorage.setItem("email", res.email);
+      window.dispatchEvent(new Event("storage"));
       // getting role from token
       const user = getUserFromToken(res.token);
 
