@@ -305,3 +305,5 @@ const ProductPage = () => (
     <ProductPageContent />
   </Suspense>
 );
+
+export default ProductPage;
