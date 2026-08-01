@@ -13,6 +13,8 @@ import {
   FiCheckCircle,
   FiShield,
   FiPackage,
+  FiCreditCard,
+  FiTruck,
 } from "react-icons/fi";
 import { showToast } from "../../utils/swal";
 import { useSearchParams } from "next/navigation";
@@ -30,7 +32,7 @@ const Checkout = () => {
   // Store buy now product
   const [buyNowItem, setBuyNowItem] = useState(null);
 
-  // Show payment popup
+  // Show payment section
   const [modeOfPayment, setModeOfPayment] = useState(false);
 
   // Store selected payment method
@@ -385,7 +387,7 @@ console.log('cartItems',cartItems)
               <span>₹{total}</span>
             </div>
 
-            <div className="relative">
+            {!modeOfPayment ? (
               <button
                 onClick={() => setModeOfPayment(true)}
                 disabled={!selectedAddress || checkoutItems?.length === 0}
@@ -393,43 +395,80 @@ console.log('cartItems',cartItems)
               >
                 Place Order →
               </button>
+            ) : (
+              <div>
+                <p className="text-sm font-bold text-gray-800 mb-3">Select Payment Method</p>
 
-              {modeOfPayment && (
-                <div className="absolute bottom-16 left-0 w-full bg-white border rounded-xl shadow-lg p-4 z-50">
-                  <p className="font-semibold text-gray-700 mb-3">
-                    Select Payment Method
-                  </p>
-
-                  <label className="flex items-center gap-2 mb-2 cursor-pointer">
+                <div className="space-y-2 mb-4">
+                  {/* COD Option */}
+                  <label
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "COD"
+                        ? "border-indigo-500 bg-indigo-50"
+                        : "border-gray-200 hover:border-indigo-200"
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="payment"
                       value="COD"
+                      className="accent-indigo-600"
+                      checked={paymentMethod === "COD"}
                       onChange={(e) => setPaymentMethod(e.target.value)}
                     />
-                    <span>Cash On Delivery</span>
+                    <FiTruck size={18} className={paymentMethod === "COD" ? "text-indigo-500" : "text-gray-400"} />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">Cash on Delivery</p>
+                      <p className="text-xs text-gray-400">Pay when your order arrives</p>
+                    </div>
+                    {paymentMethod === "COD" && (
+                      <FiCheckCircle size={16} className="text-indigo-500 ml-auto" />
+                    )}
                   </label>
 
-                  <label className="flex items-center gap-2 mb-4 cursor-pointer">
+                  {/* Online Payment Option */}
+                  <label
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "UPI"
+                        ? "border-indigo-500 bg-indigo-50"
+                        : "border-gray-200 hover:border-indigo-200"
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="payment"
                       value="UPI"
+                      className="accent-indigo-600"
+                      checked={paymentMethod === "UPI"}
                       onChange={(e) => setPaymentMethod(e.target.value)}
                     />
-                    <span>UPI / Razorpay</span>
+                    <FiCreditCard size={18} className={paymentMethod === "UPI" ? "text-indigo-500" : "text-gray-400"} />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">Pay Online</p>
+                      <p className="text-xs text-gray-400">UPI, Cards & more via Razorpay</p>
+                    </div>
+                    {paymentMethod === "UPI" && (
+                      <FiCheckCircle size={16} className="text-indigo-500 ml-auto" />
+                    )}
                   </label>
-
-                  <button
-                    onClick={handlePlaceOrder}
-                    disabled={!paymentMethod}
-                    className="w-full bg-green-600 text-white py-2 rounded-lg disabled:opacity-50"
-                  >
-                    Confirm Order
-                  </button>
                 </div>
-              )}
-            </div>
+
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={!paymentMethod}
+                  className="w-full button-bg text-white py-3 rounded-full font-bold text-sm shadow hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Confirm & Place Order →
+                </button>
+
+                <button
+                  onClick={() => { setModeOfPayment(false); setPaymentMethod(""); }}
+                  className="w-full text-xs text-gray-400 hover:text-gray-600 mt-2 transition"
+                >
+                  ← Change
+                </button>
+              </div>
+            )}
 
             <Link
               href={type === "buyNow" ? "product" : "/cart"}

@@ -102,7 +102,7 @@ const CartPage = () => {
   const handleVerificationAddress = () => {
     if (address.length === 0) {
       showToast({ icon: "error", title: "Please Add Address" });
-      router.push("/add-address");
+      router.push("/address");
       return;
     }
     router.push("/checkout");

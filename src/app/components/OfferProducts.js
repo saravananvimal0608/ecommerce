@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { apiRequest } from '../utils/commonApi';
+import NoDataFound from './NoDataFound';
 
 export default function OfferProducts() {
   const [products, setProducts] = useState([]);
@@ -27,7 +28,9 @@ export default function OfferProducts() {
   return (
     <section className="px-4 md:px-8">
       {error ? (
-        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
+        <div className="flex justify-center">
+          <NoDataFound message="Something went wrong. Please try again later." />
+        </div>
       ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative md:-top-[35px] z-10">
         {products.map((product) => (

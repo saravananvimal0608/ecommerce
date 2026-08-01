@@ -191,7 +191,9 @@ const ProductPageContent = () => {
           {loading ? (
             <SkeletonLoader variant="productPage" loading={loading} />
           ) : error ? (
-            <p className="text-center text-red-500 py-10">Something went wrong. Please try again later.</p>
+            <div className="flex justify-center">
+          <NoDataFound message="Something went wrong. Please try again later." />
+        </div>
           ) : products.length === 0 ? <NoDataFound /> : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {products?.map((product) => (

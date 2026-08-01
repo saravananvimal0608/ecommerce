@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { showToast } from "../utils/swal";
 import { apiRequest } from "../utils/commonApi";
@@ -14,17 +14,47 @@ const VerifyOtp = () => {
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState({});
+  const [timer, setTimer] = useState(60);
+  const [resending, setResending] = useState(false);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const email = localStorage.getItem("resetEmail");
-
-    if (email) {
-      setData((prev) => ({
-        ...prev,
-        email,
-      }));
-    }
+    if (email) setData((prev) => ({ ...prev, email }));
   }, []);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) { clearInterval(intervalRef.current); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const handleResendOtp = async () => {
+    if (timer > 0 || resending) return;
+    setResending(true);
+    try {
+      const res = await apiRequest("/api/user/forgot-password", "post", { email: data.email });
+      showToast({ icon: "success", title: res.message || "OTP resent successfully" });
+      setOtp(["", "", "", "", "", ""]);
+      setError({});
+      setTimer(60);
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) { clearInterval(intervalRef.current); return 0; }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err) {
+      showToast({ icon: "error", title: err.response?.data?.message || "Failed to resend OTP" });
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleOtpChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
@@ -146,6 +176,23 @@ const VerifyOtp = () => {
           >
             Verify OTP
           </button>
+
+          <div className="text-center text-sm">
+            {timer > 0 ? (
+              <p className="text-gray-400">
+                Resend OTP in <span className="text-indigo-400 font-semibold">{timer}s</span>
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resending}
+                className="text-indigo-400 hover:text-indigo-300 font-semibold transition disabled:opacity-50"
+              >
+                {resending ? "Resending..." : "Resend OTP"}
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>

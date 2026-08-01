@@ -126,7 +126,6 @@ const Navbar = () => {
     return () => window.removeEventListener("storage", syncAuth);
   }, [pathname]);
 
-  console.log('role',role)
   return (
     !showSearchForNoToken && (
       <div className="hidden md:block">
@@ -245,28 +244,28 @@ const Navbar = () => {
                     {token && (
                       <>
                         {role === 'admin' &&
-                          <Link href="/admin">
+                          <Link href="/admin" onClick={() => setToggle(false)}>
                             <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
                               <RiAdminLine size={18} />
                               <span>Admin Panel</span>
                             </button>
                           </Link>
                         }
-                        <Link href="/user">
+                        <Link href="/user" onClick={() => setToggle(false)}>
                           <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
                             <FiUser size={18} />
                             <span>My Profile</span>
                           </button>
                         </Link>
 
-                        <Link href="/orders">
-                          <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
+                        <Link href="/orders" onClick={() => setToggle(false)}>
+                          <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition" >
                             <FiPackage size={18} />
                             <span>My Orders</span>
                           </button>
                         </Link>
 
-                        <Link href="/address">
+                        <Link href="/address" onClick={() => setToggle(false)}>
                           <button className="w-full px-4 py-3 flex items-center gap-3 text-left text-gray-700 hover:bg-gray-100 transition">
                             <FiMapPin size={18} />
                             <span>My Address</span>

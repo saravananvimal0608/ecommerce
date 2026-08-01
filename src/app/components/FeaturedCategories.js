@@ -47,7 +47,9 @@ const FeaturedCategories = () => {
       {loading ? (
         <SkeletonLoader variant="category" loading={loading}/>
       ) : error ? (
-        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
+       <div className="flex justify-center">
+          <NoDataFound message="Something went wrong. Please try again later." />
+        </div>
       ) : categories.length === 0 ? (
         <div className="flex justify-center">
           <NoDataFound message="No Categories Found" />

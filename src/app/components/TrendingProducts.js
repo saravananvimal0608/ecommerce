@@ -37,7 +37,9 @@ const TrendingProducts = () => {
       {loading ? (
         <Swipper data={data} variant="product" loading={loading} />
       ) : error ? (
-        <p className="text-center text-red-500 py-6">Something went wrong. Please try again later.</p>
+        <div className="flex justify-center">
+          <NoDataFound message="Something went wrong. Please try again later." />
+        </div>
       ) : data.length === 0 ? (
         <div className="flex justify-center">
           <NoDataFound message="No Trending Products Found" color="text-black" />
