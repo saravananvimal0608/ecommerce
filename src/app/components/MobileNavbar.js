@@ -22,15 +22,17 @@ export default function MobileNavbar() {
   const cartItems = useSelector((s) => s.cart.items);
   const { search, setSearch } = useSearch();
 
-  const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
-  const [role, setRole] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [data, setData] = useState([]);
   const searchRef = useRef(null);
-  const emailFirstLetter = email?.charAt(0).toUpperCase() || '';
+
+  // Read auth directly at render time — localStorage is synchronous, no effect needed
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+  const email = typeof window !== 'undefined' ? localStorage.getItem('email') || '' : '';
+  const emailFirstLetter = email.charAt(0).toUpperCase() || '';
+  const role = getUserFromToken(token)?.role || '';
 
   const hideNav =
     pathname === '/login' ||
@@ -44,15 +46,6 @@ export default function MobileNavbar() {
     pathname === '/' ||
     pathname === '/product' ||
     pathname.startsWith('/product/');
-
-  useEffect(() => {
-    const t = localStorage.getItem('token') || '';
-    const e = localStorage.getItem('email') || '';
-    setToken(t);
-    setEmail(e);
-    const user = getUserFromToken(t);
-    setRole(user?.role || '');
-  }, [pathname]);
 
   useEffect(() => { dispatch(fetchCart()); }, [dispatch]);
 
@@ -79,8 +72,6 @@ export default function MobileNavbar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
-    setToken('');
-    setEmail('');
     showToast({ icon: 'success', title: 'Successfully logged out' });
     setDrawerOpen(false);
     router.push('/login');
