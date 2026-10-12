@@ -11,8 +11,8 @@ import { IoEyeSharp } from "react-icons/io5";
 const Login = () => {
   const router = useRouter();
   const [data, setData] = useState({
-    email: "",
-    password: "",
+    email: "saravananvimal0608@gmail.com",
+    password: "Welcome@123",
   });
   const [error, setError] = useState({});
   const [toggle, setToggle] = useState(false);
