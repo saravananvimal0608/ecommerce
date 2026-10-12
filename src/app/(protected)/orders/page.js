@@ -32,7 +32,7 @@ const Orders = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 pt-15 pb-10">
+    <div className="max-w-6xl mx-auto px-4 pt-16 pb-10">
       <div className="flex items-center gap-3 mb-8">
         <FiPackage size={30} className="text-indigo-600" />
         <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>

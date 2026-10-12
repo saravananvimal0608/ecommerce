@@ -45,7 +45,6 @@ const UserProfile = () => {
   const fetchUser = async () => {
     try {
       const res = await apiRequest("/api/user/user-details");
-      console.log(res.data);
       setUser(res.data);
       setProfile({
         name: res.data.name || "",

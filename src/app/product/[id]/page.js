@@ -34,7 +34,11 @@ const ProductPage = () => {
   const ratingRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token") || "");
+  }, []);
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -130,7 +134,6 @@ const ProductPage = () => {
   }, [id]);
 
   const filteredImage = product?.images?.slice(1);
-  console.log('product.product_type', product.product_type)
   const galleryImages = product.product_type === "best-seller" ? filteredImage : product?.images;
   const inStock = product?.stock > 0;
   const avgRating = product?.rating || 0;

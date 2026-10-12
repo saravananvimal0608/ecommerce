@@ -26,11 +26,8 @@ const Checkout = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Store selected address id
+  // Store selected address id — null means "use first address by default"
   const [selectedAddress, setSelectedAddress] = useState(null);
-
-  // Store buy now product
-  const [buyNowItem, setBuyNowItem] = useState(null);
 
   // Show payment section
   const [modeOfPayment, setModeOfPayment] = useState(false);
@@ -41,10 +38,18 @@ const Checkout = () => {
   // Get checkout type from url
   const type = searchParams.get("type");
 
+  // Read buy now product directly from localStorage — no effect needed
+  const buyNowItem = type === "buyNow"
+    ? JSON.parse(localStorage.getItem("buyNowProduct") || "null")
+    : null;
+
   // Get address data from redux
   const { address, loading: addressLoading } = useSelector(
     (state) => state.address,
   );
+
+  // Derive the active address: explicit user selection, or first address as default
+  const resolvedAddress = selectedAddress ?? address?.[0]?._id ?? null;
 
   // Get cart data from redux
   const { items: cartItems, loading } = useSelector((state) => state.cart);
@@ -54,13 +59,6 @@ const Checkout = () => {
     dispatch(fetchAddress());
     dispatch(fetchCart());
   }, [dispatch]);
-
-  // Automatically select first address
-  useEffect(() => {
-    if (address?.length > 0 && !selectedAddress) {
-      setSelectedAddress(address[0]._id);
-    }
-  }, [address]);
 
   // Show buy now product or cart products
   const checkoutItems =
@@ -83,7 +81,7 @@ const Checkout = () => {
     try {
       const res = await apiRequest("/api/order/cod", "post", {
         list_items: checkoutItems,
-        addressId: selectedAddress,
+        addressId: resolvedAddress,
       });
 
       if (res?.success) {
@@ -151,7 +149,7 @@ const Checkout = () => {
 
         list_items: checkoutItems,
 
-        addressId: selectedAddress,
+        addressId: resolvedAddress,
       });
 
       if (res.success) {
@@ -181,7 +179,7 @@ const Checkout = () => {
     try {
       const res = await apiRequest("/api/order/onlinePayment", "post", {
         list_items: checkoutItems,
-        addressId: selectedAddress,
+        addressId: resolvedAddress,
       });
 
       if (res.success) {
@@ -195,7 +193,7 @@ const Checkout = () => {
   // Handle order placement
   const handlePlaceOrder = () => {
     // Address validation
-    if (!selectedAddress) {
+    if (!resolvedAddress) {
       showToast({
         icon: "error",
         title: "Please select a delivery address",
@@ -213,18 +211,6 @@ const Checkout = () => {
       razorpayPaymentApi();
     }
   };
-
-  // Get buy now product from localStorage
-  useEffect(() => {
-    if (type === "buyNow") {
-      const buyNowProduct = JSON.parse(localStorage.getItem("buyNowProduct"));
-
-      setBuyNowItem(buyNowProduct);
-    }
-  }, [type]);
-
-console.log('cartItems',cartItems)
-
 
   if (loading || addressLoading) {
     return <SkeletonLoader variant="checkout" loading={loading} />;
@@ -268,7 +254,7 @@ console.log('cartItems',cartItems)
                   <label
                     key={d._id}
                     className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      selectedAddress === d._id
+                      resolvedAddress === d._id
                         ? "border-indigo-500 bg-indigo-50"
                         : "border-gray-100 hover:border-indigo-200"
                     }`}
@@ -277,7 +263,7 @@ console.log('cartItems',cartItems)
                       type="radio"
                       name="address"
                       className="mt-1 accent-indigo-600"
-                      checked={selectedAddress === d._id}
+                      checked={resolvedAddress === d._id}
                       onChange={() => setSelectedAddress(d._id)}
                     />
                     <div className="flex-1">
@@ -285,7 +271,7 @@ console.log('cartItems',cartItems)
                         <p className="font-semibold text-gray-800 text-sm">
                           {d.address_line}
                         </p>
-                        {selectedAddress === d._id && (
+                        {resolvedAddress === d._id && (
                           <FiCheckCircle
                             size={14}
                             className="text-indigo-500"
@@ -390,7 +376,7 @@ console.log('cartItems',cartItems)
             {!modeOfPayment ? (
               <button
                 onClick={() => setModeOfPayment(true)}
-                disabled={!selectedAddress || checkoutItems?.length === 0}
+                disabled={!resolvedAddress || checkoutItems?.length === 0}
                 className="w-full button-bg text-white py-3 rounded-full font-bold text-sm shadow hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Place Order →

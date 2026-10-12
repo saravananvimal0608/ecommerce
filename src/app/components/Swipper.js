@@ -177,7 +177,6 @@ export default function Swipper({ data = [], variant = "banner", loading }) {
   }
 
   // default: banner
-  console.log("data length", data)
   return (
     <>
       {data.length === 0 ? <NoDataFound /> :

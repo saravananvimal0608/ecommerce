@@ -138,7 +138,6 @@ const CartPage = () => {
     );
   }
 
-  console.log("items", cartItems);
   return (
     <div className="max-w-7xl mx-auto pt-6 md:pt-24 pb-12 px-4 md:px-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">

@@ -46,20 +46,13 @@ export default function MobileNavbar() {
     pathname.startsWith('/product/');
 
   useEffect(() => {
-    const syncAuth = () => {
-      setEmail(localStorage.getItem('email') || '');
-      setToken(localStorage.getItem('token') || '');
-    };
-    syncAuth();
-    window.addEventListener('storage', syncAuth);
-    return () => window.removeEventListener('storage', syncAuth);
+    const t = localStorage.getItem('token') || '';
+    const e = localStorage.getItem('email') || '';
+    setToken(t);
+    setEmail(e);
+    const user = getUserFromToken(t);
+    setRole(user?.role || '');
   }, [pathname]);
-
-  useEffect(() => {
-    if (token) {
-      getUserFromToken(token).then((u) => setRole(u?.role || ''));
-    }
-  }, [token]);
 
   useEffect(() => { dispatch(fetchCart()); }, [dispatch]);
 
@@ -86,6 +79,8 @@ export default function MobileNavbar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
+    setToken('');
+    setEmail('');
     showToast({ icon: 'success', title: 'Successfully logged out' });
     setDrawerOpen(false);
     router.push('/login');

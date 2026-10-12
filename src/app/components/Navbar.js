@@ -26,15 +26,16 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [data, setData] = useState([]);
   const [toggle, setToggle] = useState(false);
-  // search and setsearch comming from usecontext from context folder
   const { search, setSearch } = useSearch();
   const router = useRouter();
   const searchRef = React.useRef(null);
-  const [email, setEmail] = useState("");
-  const [token, setToken] = useState("");
-  const emailFirstLetter = email?.charAt(0).toUpperCase() || "";
   const toggleRef = React.useRef(null);
-  const [role, setRole] = useState("");
+
+  // Read auth directly at render time — localStorage is synchronous, no effect needed
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
+  const email = typeof window !== "undefined" ? localStorage.getItem("email") || "" : "";
+  const emailFirstLetter = email.charAt(0).toUpperCase() || "";
+  const role = getUserFromToken(token)?.role || "";
 
 
   const showSearch =
@@ -54,7 +55,8 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-    showToast({ icon: "success", title: "successfully logout" });
+    setToggle(false);
+    showToast({ icon: "success", title: "Successfully logged out" });
     router.push("/login");
   };
 
@@ -104,27 +106,6 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      const user = await getUserFromToken(token);
-
-      setRole(user.role);
-    };
-
-    if (token) {
-      fetchRole();
-    }
-  }, [token]);
-  useEffect(() => {
-    const syncAuth = () => {
-      setEmail(localStorage.getItem("email") || "");
-      setToken(localStorage.getItem("token") || "");
-    };
-    syncAuth();
-    window.addEventListener("storage", syncAuth);
-    return () => window.removeEventListener("storage", syncAuth);
-  }, [pathname]);
 
   return (
     !showSearchForNoToken && (
